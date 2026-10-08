@@ -23,10 +23,11 @@ try {
     $ahk = Join-Path $root 'runtime\AutoHotkey64.exe'
     if (-not (Test-Path -LiteralPath $ahk)) { throw 'The included AutoHotkey runtime is missing. Extract the entire ZIP again.' }
     if (-not (Test-Path -LiteralPath (Join-Path $root 'runtime\TargetScan.dll'))) { throw 'TargetScan.dll is missing. Extract the complete ZIP.' }
-    Write-Host 'Da Larp v13.6 preflight validation'
+    Write-Host 'Da Larp v14 alpha preflight validation'
     $scripts = @(Join-Path $root 'DaHoodSuite.ahk')
     $scripts += @(Get-ChildItem -LiteralPath (Join-Path $root 'workers') -Filter '*.ahk' | Sort-Object Name | ForEach-Object FullName)
     $scripts += @(Join-Path $root 'tools\SuiteGuardian.ahk')
+    $scripts += @(Join-Path $root 'devtests\ConfigRegression.ahk')
     $syntaxFailures = 0
     foreach ($script in $scripts) {
         try {
@@ -48,7 +49,10 @@ try {
         }
     }
     if ($runtimeFailures -gt 0) { throw "$runtimeFailures runtime preflight stage(s) failed. The existing session was left running." }
-    Write-Host "PASS: all $($scripts.Count) AHK entry points and three runtime probes."
+    $regression = Join-Path $root 'devtests\ConfigRegression.ahk'
+    if (-not (Test-Path -LiteralPath $regression)) { throw 'v14 configuration regression test is missing.' }
+    Invoke-AhkPreflight -Ahk $ahk -Arguments ('/force /ErrorStdOut=UTF-8 "' + $regression + '"') -Stage 'v14 configuration regression' -FailOnWarning
+    Write-Host "PASS: all $($scripts.Count) AHK entry points, three runtime probes and v14 configuration regression."
     if ($PreflightOnly) { exit 0 }
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $root 'tools\Stop-SuiteProcesses.ps1') -SuiteRoot $root
     if ($LASTEXITCODE -ne 0) { throw 'Unable to stop the previous session.' }

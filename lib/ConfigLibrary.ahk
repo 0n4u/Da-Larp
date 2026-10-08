@@ -28,6 +28,9 @@ IvoryConfigRefreshDropdown(preferred := "") {
         path := A_LoopFileFullPath
         if !ValidateProfileFile(path)
             continue
+        try SettingsSchema.ValidateFile(path)
+        catch
+            continue
         label := IniRead(path, "General", "Profile", "")
         if label = ""
             label := RegExReplace(A_LoopFileName, "i)\.ini$")

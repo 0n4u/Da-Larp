@@ -5,7 +5,7 @@ class SettingsSchema {
         defaults := "
 (
 Meta.SchemaVersion=17
-Meta.AppVersion=13.6
+Meta.AppVersion=14.0-alpha.1
 Meta.Game=Da Hood
 General.Master=1
 General.Profile=Default

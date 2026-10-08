@@ -25,7 +25,7 @@ KeyHistory(0)
 DetectHiddenWindows(true)
 
 APP_NAME := "Da Larp"
-APP_VERSION := "13.6"
+APP_VERSION := "14.0-alpha.1"
 A_IconTip := APP_NAME
 BASE_DIR := A_ScriptDir
 CONFIG_DIR := BASE_DIR "\config"

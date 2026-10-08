@@ -5,7 +5,8 @@
         [Parameter(Mandatory=$true)][string]$Arguments,
         [Parameter(Mandatory=$true)][string]$Stage,
         [ValidateRange(1, 2147483647)][int]$TimeoutMs = 20000,
-        [switch]$PassThru
+        [switch]$PassThru,
+        [switch]$FailOnWarning
     )
 
     $process = New-Object System.Diagnostics.Process
@@ -45,6 +46,9 @@
             if ($stderr.Trim()) { Write-Host $stderr.TrimEnd() }
         }
         if ($exitCode -ne 0) { throw "Process returned exit $exitCode." }
+        if ($FailOnWarning -and (($stdout + "`n" + $stderr) -match '(?i)\bWarning:')) {
+            throw 'AutoHotkey emitted a warning during validation.'
+        }
         if ($PassThru) {
             [pscustomobject]@{
                 ExitCode = $exitCode

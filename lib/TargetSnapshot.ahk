@@ -110,8 +110,11 @@ class TargetSnapshot {
             throw Error("TargetScanAdvanced.dll is missing; extract the full v13.6 archive")
         this.AdvancedScan := DllCall("kernel32\GetProcAddress", "Ptr", this.AdvancedLibrary,
             "AStr", "ScanAdvanced", "Ptr")
-        if !this.AdvancedScan
+        if !this.AdvancedScan {
+            DllCall("kernel32\FreeLibrary", "Ptr", this.AdvancedLibrary)
+            this.AdvancedLibrary := 0
             throw Error("TargetScanAdvanced.dll does not expose ScanAdvanced")
+        }
     }
 
     static AdvancedFind(frame, field, refX, refY, colors, tolerances, support,
